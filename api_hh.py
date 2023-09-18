@@ -5,7 +5,7 @@ class HH_API:
     def __init__(self):
         self.url = "https://api.hh.ru/vacancies"
         self.params = {
-            "text": "Python",
+            "text": "",
             "area": 113,
             "only_with_salary": True,
             "per_page": 10,
