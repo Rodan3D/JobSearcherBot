@@ -25,7 +25,7 @@ hh_api = HH_API()
 def create_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
     item_help = types.KeyboardButton("Помощь 🆘")
-    item_search = types.KeyboardButton("Поиск вакансий 🔎")
+    item_search = types.KeyboardButton("Меню настройки вакансий ⚙️")
     item_info = types.KeyboardButton("Информация ℹ️")
     markup.add(item_help, item_search, item_info)
     return markup
@@ -43,12 +43,22 @@ def start(message):
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Поиск вакансий 🔎" or message.text == "/vacancy_search")
+@bot.message_handler(func=lambda message: message.text == "Меню настройки вакансий ⚙️" or message.text == "/main")
 def search(message):
-    try:
-        # Вызовите метод search_vacancies вашего класса HH_API
-        vacancies = hh_api.search_vacancies()
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    item_change_key = types.KeyboardButton("Изменить ключевое слово 🔄")
+    item_exclude_word = types.KeyboardButton("Слова-исключения")
+    item_search_vacancy = types.KeyboardButton("Поиск вакансий 🔎")
+    item_back = types.KeyboardButton("Назад ↩️")
+    markup.add(item_change_key, item_exclude_word, item_search_vacancy, item_back)
+    bot.send_message(message.chat.id, "Меню настройки вакансий 🔎", reply_markup=markup)
 
+
+@bot.message_handler(func=lambda message: message.text == "Поиск вакансий 🔎" or message.text == "/search")
+@logger.catch
+def search_command(message):
+    try:
+        vacancies = hh_api.search_vacancies()
         if vacancies:
             response = "Результаты поиска вакансий:\n\n"
             for vacancy in vacancies:
@@ -56,19 +66,15 @@ def search(message):
                 response += f"Зарплата: {vacancy['salary']}\n"
                 response += f"Ссылка на вакансию: {vacancy['alternate_url']}\n\n"
                 response += "🌎🇷🇺🇺🇦🌎🇧🇾🇰🇿🌎🇦🇲🇬🇪🌎🇲🇩🇰🇬🌎🇹🇯🇹🇲🇦🇿🌎\n\n"
-
-            # Отправьте результаты в чат Telegram
             bot.send_message(message.chat.id, response)
-
         else:
             bot.send_message(message.chat.id, "Ничего не найдено.")
-
     except Exception as e:
         bot.send_message(message.chat.id, f"Произошла ошибка: {str(e)}")
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Изменить ключевое слово" or message.text == "/key")
+@bot.message_handler(func=lambda message: message.text == "Изменить ключевое слово 🔄" or message.text == "/key")
 def change_keyword(message):
     bot.send_message(
         message.chat.id, "Введите новое ключевое слово для поиска вакансий:"
@@ -83,7 +89,6 @@ def set_new_keyword(message):
     bot.send_message(
         message.chat.id, f"Новое ключевое слово для поиска вакансий: {new_keyword}"
     )
-
 
 
 @logger.catch
