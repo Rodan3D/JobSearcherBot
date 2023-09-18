@@ -51,7 +51,7 @@ def search(message):
     item_search_vacancy = types.KeyboardButton("Поиск вакансий 🔎")
     item_back = types.KeyboardButton("Назад ↩️")
     markup.add(item_change_key, item_exclude_word, item_search_vacancy, item_back)
-    bot.send_message(message.chat.id, "Меню настройки вакансий 🔎", reply_markup=markup)
+    bot.send_message(message.chat.id, "Вы перешли в Меню настройки вакансий 🔎", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda message: message.text == "Поиск вакансий 🔎" or message.text == "/search")
@@ -111,7 +111,7 @@ def about_info(message):
     item_contact = types.KeyboardButton("Контакты 📞")
     item_back = types.KeyboardButton("Назад ↩️")
     markup.add(item_about, item_contact, item_back)
-    bot.send_message(message.chat.id, "Информация ℹ️", reply_markup=markup)
+    bot.send_message(message.chat.id, "Вы перешли в меню Информация ℹ️", reply_markup=markup)
 
 
 @logger.catch
@@ -127,10 +127,7 @@ def about_info(message):
 @logger.catch
 @bot.message_handler(func=lambda message: message.text == "Контакты 📞")
 def contacts_info(message):
-    bot.send_message(
-        message.chat.id,
-        "Вы можете связаться с разработчиком бота : https://t.me/Rodan3D",
-    )
+    bot.send_message(message.chat.id, "Связь с разработчиком : https://t.me/Rodan3D")
 
 
 @logger.catch
