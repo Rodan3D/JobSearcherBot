@@ -43,7 +43,10 @@ def start(message):
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Меню настройки вакансий ⚙️" or message.text == "/main")
+@bot.message_handler(
+    func=lambda message: message.text == "Меню настройки вакансий ⚙️"
+    or message.text == "/main"
+)
 def search(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item_change_key = types.KeyboardButton("Изменить ключевое слово 🔄")
@@ -51,10 +54,14 @@ def search(message):
     item_search_vacancy = types.KeyboardButton("Поиск вакансий 🔎")
     item_back = types.KeyboardButton("Назад ↩️")
     markup.add(item_change_key, item_exclude_word, item_search_vacancy, item_back)
-    bot.send_message(message.chat.id, "Вы перешли в Меню настройки вакансий 🔎", reply_markup=markup)
+    bot.send_message(
+        message.chat.id, "Вы перешли в Меню настройки вакансий 🔎", reply_markup=markup
+    )
 
 
-@bot.message_handler(func=lambda message: message.text == "Поиск вакансий 🔎" or message.text == "/search")
+@bot.message_handler(
+    func=lambda message: message.text == "Поиск вакансий 🔎" or message.text == "/search"
+)
 @logger.catch
 def search_command(message):
     try:
@@ -74,7 +81,10 @@ def search_command(message):
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Изменить ключевое слово 🔄" or message.text == "/key")
+@bot.message_handler(
+    func=lambda message: message.text == "Изменить ключевое слово 🔄"
+    or message.text == "/key"
+)
 def change_keyword(message):
     bot.send_message(
         message.chat.id, "Введите новое ключевое слово для поиска вакансий:"
@@ -92,7 +102,9 @@ def set_new_keyword(message):
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Помощь 🆘" or message.text == "/help")
+@bot.message_handler(
+    func=lambda message: message.text == "Помощь 🆘" or message.text == "/help"
+)
 def help_bot(message):
     bot.send_message(
         message.chat.id,
@@ -104,14 +116,18 @@ def help_bot(message):
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Информация ℹ️" or message.text == "/info")
+@bot.message_handler(
+    func=lambda message: message.text == "Информация ℹ️" or message.text == "/info"
+)
 def about_info(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item_about = types.KeyboardButton("О боте 💾")
     item_contact = types.KeyboardButton("Контакты 📞")
     item_back = types.KeyboardButton("Назад ↩️")
     markup.add(item_about, item_contact, item_back)
-    bot.send_message(message.chat.id, "Вы перешли в меню Информация ℹ️", reply_markup=markup)
+    bot.send_message(
+        message.chat.id, "Вы перешли в меню Информация ℹ️", reply_markup=markup
+    )
 
 
 @logger.catch
@@ -145,8 +161,9 @@ def handle_unknown(message):
     bot.send_message(
         message.chat.id,
         "Извините, я не понял ваш запрос 🤷‍♂️. Для получения списка команд воспользуйтесь командой /start или "
-        "нажмите на" 'кнопку "Помощь 🆘"'
-                    )
+        "нажмите на"
+        'кнопку "Помощь 🆘"',
+    )
 
 
 # Запуск бота
