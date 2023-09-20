@@ -71,8 +71,8 @@ def search_command(message):
             for vacancy in vacancies:
                 response += f"Название вакансии: {vacancy['name']}\n"
                 response += f"Зарплата: {vacancy['salary']}\n"
-                response += f"Ссылка на вакансию: {vacancy['alternate_url']}\n\n"
-                response += "🌎🇷🇺🇺🇦🌎🇧🇾🇰🇿🌎🇦🇲🇬🇪🌎🇲🇩🇰🇬🌎🇹🇯🇹🇲🇦🇿🌎\n\n"
+                response += f"Ссылка на вакансию: {vacancy['alternate_url']}\n"
+                response += "➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖\n\n"
             bot.send_message(message.chat.id, response)
         else:
             bot.send_message(message.chat.id, "Ничего не найдено.")
