@@ -16,7 +16,7 @@ logger.add(
     rotation="1 MB",
     compression="zip",
 )
-
+#
 # Создайте экземпляр HH_API
 hh_api = HH_API()
 
