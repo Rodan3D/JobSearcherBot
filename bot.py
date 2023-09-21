@@ -16,8 +16,8 @@ logger.add(
     rotation="1 MB",
     compression="zip",
 )
-#
-# Создайте экземпляр HH_API
+
+# Создали экземпляр HH_API
 hh_api = HH_API()
 
 
@@ -50,7 +50,7 @@ def start(message):
 def search(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item_change_key = types.KeyboardButton("Изменить ключевое слово 🔄")
-    item_exclude_word = types.KeyboardButton("Слова-исключения")
+    item_exclude_word = types.KeyboardButton("Добавить слово-исключение")
     item_search_vacancy = types.KeyboardButton("Поиск вакансий 🔎")
     item_back = types.KeyboardButton("Назад ↩️")
     markup.add(item_change_key, item_exclude_word, item_search_vacancy, item_back)
@@ -81,14 +81,9 @@ def search_command(message):
 
 
 @logger.catch
-@bot.message_handler(
-    func=lambda message: message.text == "Изменить ключевое слово 🔄"
-    or message.text == "/key"
-)
+@bot.message_handler(func=lambda message: message.text == "Изменить ключевое слово 🔄" or message.text == "/key")
 def change_keyword(message):
-    bot.send_message(
-        message.chat.id, "Введите новое ключевое слово для поиска вакансий:"
-    )
+    bot.send_message(message.chat.id, "Введите новое ключевое слово для поиска вакансий:")
     bot.register_next_step_handler(message, set_new_keyword)
 
 
@@ -96,15 +91,25 @@ def change_keyword(message):
 def set_new_keyword(message):
     new_keyword = message.text
     hh_api.update_keyword(new_keyword)
-    bot.send_message(
-        message.chat.id, f"Новое ключевое слово для поиска вакансий: {new_keyword}"
-    )
+    bot.send_message(message.chat.id, f"Новое ключевое слово для поиска вакансий: {new_keyword}")
 
 
 @logger.catch
-@bot.message_handler(
-    func=lambda message: message.text == "Помощь 🆘" or message.text == "/help"
-)
+@bot.message_handler(func=lambda message: message.text == "Добавить слово-исключение" or message.text == "/exclude_key")
+def add_exclude_words(message):
+    bot.send_message(message.chat.id, "Введите слово-исключение:")
+    bot.register_next_step_handler(message, set_exclude_keyword)
+
+
+@logger.catch
+def set_exclude_keyword(message):
+    keyword_to_exclude = message.text
+    hh_api.exclude_keyword(keyword_to_exclude)
+    bot.send_message(message.chat.id, f"Добавлено слово-исключение: {keyword_to_exclude}")
+
+
+@logger.catch
+@bot.message_handler(func=lambda message: message.text == "Помощь 🆘" or message.text == "/help")
 def help_bot(message):
     bot.send_message(
         message.chat.id,
