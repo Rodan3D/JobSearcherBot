@@ -25,10 +25,6 @@ class HH_API:
             print("Ошибка при запросе:", response.status_code)
             return []
 
-    # def search_by_keyword(self, keyword):
-    #     self.update_keyword(keyword)
-    #     return self.search_vacancies()
-
 
 if __name__ == "__main__":
     hh_api = HH_API()
