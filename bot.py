@@ -2,7 +2,6 @@ import telebot
 from config import TELEGRAM_TOKEN
 from loguru import logger
 from telebot import types
-
 from api_hh import HH_API
 
 # Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота
