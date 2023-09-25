@@ -3,7 +3,7 @@ from bot import logger
 
 
 class HH_API:
-    @logger.catch
+    # @logger.catch
     def __init__(self):
         self.url = "https://api.hh.ru/vacancies"
         self.params = {
