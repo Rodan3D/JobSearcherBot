@@ -1,5 +1,5 @@
 import requests
-from bot import logger
+# from bot import logger
 
 
 class HH_API:
@@ -14,18 +14,18 @@ class HH_API:
             "page": 0,
         }
 
-    @logger.catch
+    # @logger.catch
     def update_keyword(self, new_keyword):
         self.params["text"] = new_keyword
 
-    @logger.catch
+    # @logger.catch
     def exclude_keyword(self, keyword_to_exclude):
         if "text" in self.params and self.params["text"]:
             self.params["text"] += f" -{keyword_to_exclude}"
         else:
             self.params["text"] = f"-{keyword_to_exclude}"
 
-    @logger.catch
+    # @logger.catch
     def search_vacancies(self):
         response = requests.get(self.url, params=self.params)
 
