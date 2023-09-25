@@ -1,21 +1,11 @@
 import telebot
 from config import TELEGRAM_TOKEN
-from loguru import logger
+from logger import logger
 from telebot import types
 from api_hh import HH_API
 
 # Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
-
-# Логирование
-logger.add(
-    "debug.log",
-    format="{time} {level} {message}",
-    level="DEBUG",
-    rotation="1 MB",
-    compression="zip",
-)
-
 # Создали экземпляр HH_API
 hh_api = HH_API()
 
