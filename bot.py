@@ -58,29 +58,15 @@ def search_command(message):
         if vacancies:
             response = "Результаты поиска вакансий:\n\n"
             for vacancy in vacancies:
-                response += f"Название вакансии: {vacancy['name']}\n"
-                response += f"Зарплата: {format_salary(vacancy['salary'])}\n"
-                response += f"Ссылка на вакансию: {vacancy['alternate_url']}\n"
+                response += f"{vacancy['name']}\n"
+                response += f"Зарплата: {hh_api.format_salary(vacancy['salary'])}\n"
+                response += f"{vacancy['alternate_url']}\n"
                 response += "➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖\n\n"
             bot.send_message(message.chat.id, response)
         else:
             bot.send_message(message.chat.id, "Ничего не найдено.")
     except Exception as e:
         bot.send_message(message.chat.id, f"Произошла ошибка: {str(e)}")
-
-
-@logger.catch()
-def format_salary(salary_data):
-    formatted_salary = ""
-    if 'from' in salary_data and salary_data['from'] is not None:
-        formatted_salary += str(salary_data['from'])
-    if 'to' in salary_data and salary_data['to'] is not None:
-        if 'from' in salary_data and salary_data['from'] is not None:
-            formatted_salary += f" - {salary_data['to']}"
-        else:
-            formatted_salary += str(salary_data['to'])
-    formatted_salary += f" {salary_data['currency']}"
-    return formatted_salary
 
 
 @logger.catch

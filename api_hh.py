@@ -36,6 +36,19 @@ class HH_API:
             print("Ошибка при запросе:", response.status_code)
             return []
 
+    @logger.catch
+    def format_salary(self, salary_data):
+        formatted_salary = ""
+        if 'from' in salary_data and salary_data['from'] is not None:
+            formatted_salary += str(salary_data['from'])
+        if 'to' in salary_data and salary_data['to'] is not None:
+            if 'from' in salary_data and salary_data['from'] is not None:
+                formatted_salary += f" - {salary_data['to']}"
+            else:
+                formatted_salary += str(salary_data['to'])
+        formatted_salary += f" {salary_data['currency']}"
+        return formatted_salary
+
 
 if __name__ == "__main__":
     hh_api = HH_API()
