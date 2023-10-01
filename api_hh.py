@@ -1,10 +1,10 @@
 import requests
+
+from add_key_and_exclude_words import add_excluded_word_stat, add_keyword_stat
+from logger import logger
 from search_id_by_city_name import CityData
 
-from add_key_and_exclude_words import add_keyword_stat, add_excluded_word_stat
-from logger import logger
-
-city_info = CityData('city_codes.txt')
+city_info = CityData("city_codes.txt")
 
 
 class HH_API:
@@ -27,9 +27,13 @@ class HH_API:
 
     @logger.catch
     def input_area(self, city):
-        city_code = city_info.search_and_print_city_code(city)  # Получаем обновленный area
+        city_code = city_info.search_and_print_city_code(
+            city
+        )  # Получаем обновленный area
         if city_code:
-            self.params['area'] = city_code  # Обновляем параметр area только если город найден
+            self.params[
+                "area"
+            ] = city_code  # Обновляем параметр area только если город найден
 
     @logger.catch
     def update_keyword(self, new_keyword):
@@ -42,7 +46,9 @@ class HH_API:
             self.params["text"] += f" -{keyword_to_exclude}"
         else:
             self.params["text"] = f"-{keyword_to_exclude}"
-        add_excluded_word_stat(keyword_to_exclude, 1)  # Добавляем исключаемое слово в базу данных
+        add_excluded_word_stat(
+            keyword_to_exclude, 1
+        )  # Добавляем исключаемое слово в базу данных
 
     @logger.catch
     def search_vacancies(self):
@@ -58,13 +64,13 @@ class HH_API:
     @logger.catch
     def format_salary(self, salary_data):
         formatted_salary = ""
-        if 'from' in salary_data and salary_data['from'] is not None:
-            formatted_salary += str(salary_data['from'])
-        if 'to' in salary_data and salary_data['to'] is not None:
-            if 'from' in salary_data and salary_data['from'] is not None:
+        if "from" in salary_data and salary_data["from"] is not None:
+            formatted_salary += str(salary_data["from"])
+        if "to" in salary_data and salary_data["to"] is not None:
+            if "from" in salary_data and salary_data["from"] is not None:
                 formatted_salary += f" - {salary_data['to']}"
             else:
-                formatted_salary += str(salary_data['to'])
+                formatted_salary += str(salary_data["to"])
         formatted_salary += f" {salary_data['currency']}"
         return formatted_salary
 

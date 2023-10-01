@@ -1,11 +1,12 @@
 import telebot
+from telebot import types
 
-from add_key_and_exclude_words import get_popular_keywords_from_database, get_popular_excluded_words_from_database
+from add_key_and_exclude_words import (
+    get_popular_excluded_words_from_database,
+    get_popular_keywords_from_database)
 from api_hh import HH_API
 from config import TELEGRAM_TOKEN
 from logger import logger
-from telebot import types
-
 
 # Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -52,13 +53,15 @@ def search(message):
     item_popular_keywords = types.KeyboardButton("Популярные ключевые слова")
     item_popular_excluded_words = types.KeyboardButton("Популярные слова-исключения")
     item_back = types.KeyboardButton("Назад ↩️")
-    markup.add(item_input_keyword,
-               item_change_key,
-               item_search_vacancy,
-               item_exclude_word,
-               item_popular_keywords,
-               item_popular_excluded_words,
-               item_back)
+    markup.add(
+        item_input_keyword,
+        item_change_key,
+        item_search_vacancy,
+        item_exclude_word,
+        item_popular_keywords,
+        item_popular_excluded_words,
+        item_back,
+    )
     bot.send_message(
         message.chat.id, "Вы перешли в Меню настройки вакансий 🔎", reply_markup=markup
     )
@@ -91,9 +94,7 @@ def search_command(message):
     or message.text == "/input_key"
 )
 def input_keyword(message):
-    bot.send_message(
-        message.chat.id, "Введите ключевое слово для поиска:"
-    )
+    bot.send_message(message.chat.id, "Введите ключевое слово для поиска:")
     bot.register_next_step_handler(message, set_new_keyword)
     # Устанавливаем состояние ожидания ключевого слова для пользователя
     waiting_for_keyword[message.chat.id] = True
@@ -105,9 +106,7 @@ def input_keyword(message):
     or message.text == "/change_key"
 )
 def change_keyword(message):
-    bot.send_message(
-        message.chat.id, "Введите новое ключевое слово для поиска:"
-    )
+    bot.send_message(message.chat.id, "Введите новое ключевое слово для поиска:")
     bot.register_next_step_handler(message, set_new_keyword)
     # Устанавливаем состояние ожидания ключевого слова для пользователя
     waiting_for_keyword[message.chat.id] = True
@@ -117,9 +116,7 @@ def change_keyword(message):
 def set_new_keyword(message):
     new_keyword = message.text
     hh_api.update_keyword(new_keyword)
-    bot.send_message(
-        message.chat.id, f"Ключевое слово для поиска: {new_keyword}"
-    )
+    bot.send_message(message.chat.id, f"Ключевое слово для поиска: {new_keyword}")
     # Убираем состояние ожидания ключевого слова
     waiting_for_city[message.chat.id] = False
     # Запускаем функцию для запроса города
@@ -128,9 +125,7 @@ def set_new_keyword(message):
 
 @logger.catch
 def set_city(message):
-    bot.send_message(
-        message.chat.id, "Введите город для поиска:"
-    )
+    bot.send_message(message.chat.id, "Введите город для поиска:")
     bot.register_next_step_handler(message, set_new_city)
     # Устанавливаем состояние ожидания города для пользователя
     waiting_for_city[message.chat.id] = True
@@ -140,9 +135,7 @@ def set_city(message):
 def set_new_city(message):
     city = message.text
     hh_api.input_area(city)
-    bot.send_message(
-        message.chat.id, f"Город для поиска: {city}"
-    )
+    bot.send_message(message.chat.id, f"Город для поиска: {city}")
     # Убираем состояние ожидания ключевого слова
     waiting_for_keyword[message.chat.id] = False
     # Запускаем поиск сразу после ввода ключевого слова

@@ -1,9 +1,9 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 # Создаем объект базы данных SQLite
-engine = create_engine('sqlite:///keyword_stats.db')
+engine = create_engine("sqlite:///keyword_stats.db")
 
 # Создаем базовый класс для объявления моделей
 Base = declarative_base()
@@ -11,7 +11,7 @@ Base = declarative_base()
 
 # Определяем модель для таблицы
 class KeywordStat(Base):
-    __tablename__ = 'keyword_stats'
+    __tablename__ = "keyword_stats"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)  # Уникальное ключевое слово
@@ -20,7 +20,7 @@ class KeywordStat(Base):
 
 # Определяем модель для таблицы слов-исключений
 class ExcludedWordStat(Base):
-    __tablename__ = 'excluded_word_stats'
+    __tablename__ = "excluded_word_stats"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)  # Уникальное слово-исключение

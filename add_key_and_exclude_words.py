@@ -1,7 +1,9 @@
-from models import KeywordStat, session, ExcludedWordStat
+from logger import logger
+from models import ExcludedWordStat, KeywordStat, session
 
 
 # Функция для добавления ключевых слов и их статистики
+@logger.catch
 def add_keyword_stat(name, count):
     keyword = session.query(KeywordStat).filter_by(name=name).first()
     if keyword:
@@ -15,6 +17,7 @@ def add_keyword_stat(name, count):
 
 
 # Функция для добавления слов-исключений и их статистики
+@logger.catch
 def add_excluded_word_stat(name, count):
     excluded_word = session.query(ExcludedWordStat).filter_by(name=name).first()
     if excluded_word:
@@ -27,13 +30,17 @@ def add_excluded_word_stat(name, count):
     session.commit()
 
 
+@logger.catch
 def get_popular_keywords_from_database():
     # Извлеките популярные ключевые слова из базы данных
     keywords = session.query(KeywordStat).order_by(KeywordStat.count.desc()).limit(5)
     return [keyword.name for keyword in keywords]
 
 
+@logger.catch
 def get_popular_excluded_words_from_database():
     # Извлеките популярные слова-исключения из базы данных
-    excluded_words = session.query(ExcludedWordStat).order_by(ExcludedWordStat.count.desc()).limit(5)
+    excluded_words = (
+        session.query(ExcludedWordStat).order_by(ExcludedWordStat.count.desc()).limit(5)
+    )
     return [word.name for word in excluded_words]

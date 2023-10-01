@@ -1,6 +1,5 @@
 from loguru import logger
 
-
 # Логирование
 logger.add(
     "debug.log",
