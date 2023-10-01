@@ -48,14 +48,12 @@ def search(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item_input_keyword = types.KeyboardButton("Ввести ключевое слово")
     item_search_vacancy = types.KeyboardButton("Поиск 🔎")
-    item_change_key = types.KeyboardButton("Изменить ключевое слово 🔄")
     item_exclude_word = types.KeyboardButton("Добавить слово-исключение")
     item_popular_keywords = types.KeyboardButton("Популярные ключевые слова")
     item_popular_excluded_words = types.KeyboardButton("Популярные слова-исключения")
     item_back = types.KeyboardButton("Назад ↩️")
     markup.add(
         item_input_keyword,
-        item_change_key,
         item_search_vacancy,
         item_exclude_word,
         item_popular_keywords,
@@ -101,21 +99,9 @@ def input_keyword(message):
 
 
 @logger.catch
-@bot.message_handler(
-    func=lambda message: message.text == "Изменить ключевое слово 🔄"
-    or message.text == "/change_key"
-)
-def change_keyword(message):
-    bot.send_message(message.chat.id, "Введите новое ключевое слово для поиска:")
-    bot.register_next_step_handler(message, set_new_keyword)
-    # Устанавливаем состояние ожидания ключевого слова для пользователя
-    waiting_for_keyword[message.chat.id] = True
-
-
-@logger.catch
 def set_new_keyword(message):
     new_keyword = message.text
-    hh_api.update_keyword(new_keyword)
+    hh_api.input_keyword(new_keyword)
     bot.send_message(message.chat.id, f"Ключевое слово для поиска: {new_keyword}")
     # Убираем состояние ожидания ключевого слова
     waiting_for_city[message.chat.id] = False
@@ -184,15 +170,21 @@ def popular_excluded_words(message):
 def add_exclude_words(message):
     bot.send_message(message.chat.id, "Введите слово-исключение:")
     bot.register_next_step_handler(message, set_exclude_keyword)
+    # Устанавливаем состояние ожидания ключевого слова для пользователя
+    waiting_for_keyword[message.chat.id] = True
 
 
 @logger.catch
 def set_exclude_keyword(message):
     keyword_to_exclude = message.text
-    hh_api.exclude_keyword(keyword_to_exclude)
+    hh_api.exclude_keywords(keyword_to_exclude)
     bot.send_message(
         message.chat.id, f"Добавлено слово-исключение: {keyword_to_exclude}"
     )
+    # Убираем состояние ожидания ключевого слова
+    waiting_for_city[message.chat.id] = False
+    # Запускаем функцию для запроса города
+    set_city(message)
 
 
 @logger.catch
@@ -206,7 +198,6 @@ def help_bot(message):
         "/help  - выводит все команды бота\n"
         "/main - меню настройки вакансий\n"
         "/input_key - ввести ключевое слово\n"
-        "/change_key - изменить ключевое слово\n"
         "/exclude_key - добавить слово-исключение\n"
         "/popular_keywords - популярные ключевые слова\n"
         "/popular_excluded_words - популярные слова-исключения\n"

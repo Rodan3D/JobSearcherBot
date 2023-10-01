@@ -20,9 +20,8 @@ class HH_API:
         }
 
     @logger.catch
-    def input_keyword(self):
-        new_keyword = input("Введите ключевое слово: ")
-        self.update_keyword(new_keyword)
+    def input_keyword(self, new_keyword):
+        self.params["text"] = new_keyword
         add_keyword_stat(new_keyword, 1)  # Добавляем ключевое слово в базу данных
 
     @logger.catch
@@ -36,19 +35,19 @@ class HH_API:
             ] = city_code  # Обновляем параметр area только если город найден
 
     @logger.catch
-    def update_keyword(self, new_keyword):
-        self.params["text"] = new_keyword
-        add_keyword_stat(new_keyword, 1)  # Добавляем ключевое слово в базу данных
+    def exclude_keywords(self, keywords_to_exclude):
+        keywords_list = keywords_to_exclude.split(',')
+        keywords_list = [keyword.strip() for keyword in keywords_list]
 
-    @logger.catch
-    def exclude_keyword(self, keyword_to_exclude):
         if "text" in self.params and self.params["text"]:
-            self.params["text"] += f" -{keyword_to_exclude}"
+            self.params["text"] += f" NOT {' NOT '.join(keywords_list)}"
         else:
-            self.params["text"] = f"-{keyword_to_exclude}"
-        add_excluded_word_stat(
-            keyword_to_exclude, 1
-        )  # Добавляем исключаемое слово в базу данных
+            self.params["text"] = f"NOT {' NOT '.join(keywords_list)}"
+
+        for keyword_to_exclude in keywords_list:
+            add_excluded_word_stat(
+                keyword_to_exclude, 1
+            )  # Добавляем исключаемые слова в базу данных
 
     @logger.catch
     def search_vacancies(self):
