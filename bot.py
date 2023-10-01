@@ -208,6 +208,8 @@ def help_bot(message):
         "/input_key - ввести ключевое слово\n"
         "/change_key - изменить ключевое слово\n"
         "/exclude_key - добавить слово-исключение\n"
+        "/popular_keywords - популярные ключевые слова\n"
+        "/popular_excluded_words - популярные слова-исключения\n"
         "/info - информация",
     )
 
