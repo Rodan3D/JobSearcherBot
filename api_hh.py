@@ -1,5 +1,10 @@
 import requests
+from search_id_by_city_name import CityData
+
+from add_key_and_exclude_words import add_keyword_stat, add_excluded_word_stat
 from logger import logger
+
+city_info = CityData('city_codes.txt')
 
 
 class HH_API:
@@ -7,16 +12,29 @@ class HH_API:
     def __init__(self):
         self.url = "https://api.hh.ru/vacancies"
         self.params = {
-            "text": "Empty",
-            "area": 113,
+            "text": "",
+            "area": "",
             "only_with_salary": True,
             "per_page": 10,
-            "page": 0,
+            "page": 1,
         }
+
+    @logger.catch
+    def input_keyword(self):
+        new_keyword = input("Введите ключевое слово: ")
+        self.update_keyword(new_keyword)
+        add_keyword_stat(new_keyword, 1)  # Добавляем ключевое слово в базу данных
+
+    @logger.catch
+    def input_area(self, city):
+        city_code = city_info.search_and_print_city_code(city)  # Получаем обновленный area
+        if city_code:
+            self.params['area'] = city_code  # Обновляем параметр area только если город найден
 
     @logger.catch
     def update_keyword(self, new_keyword):
         self.params["text"] = new_keyword
+        add_keyword_stat(new_keyword, 1)  # Добавляем ключевое слово в базу данных
 
     @logger.catch
     def exclude_keyword(self, keyword_to_exclude):
@@ -24,6 +42,7 @@ class HH_API:
             self.params["text"] += f" -{keyword_to_exclude}"
         else:
             self.params["text"] = f"-{keyword_to_exclude}"
+        add_excluded_word_stat(keyword_to_exclude, 1)  # Добавляем исключаемое слово в базу данных
 
     @logger.catch
     def search_vacancies(self):
