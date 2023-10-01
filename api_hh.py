@@ -1,3 +1,10 @@
+"""
+Модуль, реализующий взаимодействие с API hh.ru.
+
+"""
+
+from typing import Dict, List, Union
+
 import requests
 
 from add_key_and_exclude_words import add_excluded_word_stat, add_keyword_stat
@@ -8,35 +15,51 @@ city_info = CityData("city_codes.txt")
 
 
 class HH_API:
+    """
+    Класс для взаимодействия с API hh.ru и поиска вакансий.
+
+    """
+
     @logger.catch
-    def __init__(self):
+    def __init__(self) -> None:
         self.url = "https://api.hh.ru/vacancies"
-        self.params = {
+        self.params: Dict[str, Union[str, int, bool]] = {
             "text": "",
             "area": "",
             "only_with_salary": True,
-            "per_page": 10,
+            "per_page": 30,
             "page": 1,
         }
 
     @logger.catch
-    def input_keyword(self, new_keyword):
+    def input_keyword(self, new_keyword: str) -> None:
+        """
+        Устанавливает ключевое слово для поиска вакансий.
+
+        :arg new_keyword: Строка с ключевым словом.
+        """
         self.params["text"] = new_keyword
-        add_keyword_stat(new_keyword, 1)  # Добавляем ключевое слово в базу данных
+        add_keyword_stat(new_keyword, 1)
 
     @logger.catch
-    def input_area(self, city):
-        city_code = city_info.search_and_print_city_code(
-            city
-        )  # Получаем обновленный area
+    def input_area(self, city: str) -> None:
+        """
+        Устанавливает область (город) для поиска вакансий.
+
+        :arg city: Строка с названием города.
+        """
+        city_code = city_info.search_and_print_city_code(city)
         if city_code:
-            self.params[
-                "area"
-            ] = city_code  # Обновляем параметр area только если город найден
+            self.params["area"] = city_code
 
     @logger.catch
-    def exclude_keywords(self, keywords_to_exclude):
-        keywords_list = keywords_to_exclude.split(',')
+    def exclude_keywords(self, keywords_to_exclude: str) -> None:
+        """
+        Исключает ключевые слова из поиска вакансий.
+
+        :arg keywords_to_exclude: Строка с ключевыми словами для исключения.
+        """
+        keywords_list = keywords_to_exclude.split(",")
         keywords_list = [keyword.strip() for keyword in keywords_list]
 
         if "text" in self.params and self.params["text"]:
@@ -45,12 +68,15 @@ class HH_API:
             self.params["text"] = f"NOT {' NOT '.join(keywords_list)}"
 
         for keyword_to_exclude in keywords_list:
-            add_excluded_word_stat(
-                keyword_to_exclude, 1
-            )  # Добавляем исключаемые слова в базу данных
+            add_excluded_word_stat(keyword_to_exclude, 1)
 
     @logger.catch
-    def search_vacancies(self):
+    def search_vacancies(self) -> List:
+        """
+        Осуществляет поиск вакансий с заданными параметрами.
+
+        :return: Список словарей с информацией о вакансиях.
+        """
         response = requests.get(self.url, params=self.params)
 
         if response.status_code == 200:
@@ -61,7 +87,13 @@ class HH_API:
             return []
 
     @logger.catch
-    def format_salary(self, salary_data):
+    def format_salary(self, salary_data: Dict[str, Union[int, None, str]]) -> str:
+        """
+        Форматирует информацию о зарплате из словаря в строку.
+
+        :arg salary_data: Словарь с данными о зарплате.
+        :return: Строка с отформатированной информацией о зарплате.
+        """
         formatted_salary = ""
         if "from" in salary_data and salary_data["from"] is not None:
             formatted_salary += str(salary_data["from"])
