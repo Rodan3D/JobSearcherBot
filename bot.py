@@ -9,7 +9,7 @@ from api_hh import HH_API
 from config import TELEGRAM_TOKEN
 from logger import logger
 
-# Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота
+# Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота в файле config.py
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 # Создали экземпляр HH_API
 hh_api = HH_API()
@@ -202,7 +202,7 @@ def popular_keywords(message):
         response = "Популярные ключевые слова:\n\n"
         for keyword in keywords[:5]:
             response += f"*{keyword}*\n"
-        bot.send_message(message.chat.id, response, parse_mode='MARKDOWN')
+        bot.send_message(message.chat.id, response, parse_mode="MARKDOWN")
     else:
         bot.send_message(message.chat.id, "Нет популярных ключевых слов.")
 
@@ -225,7 +225,7 @@ def popular_excluded_words(message):
         response = "Популярные слова-исключения:\n\n"
         for word in excluded_words[:5]:
             response += f"*{word}*\n"
-        bot.send_message(message.chat.id, response, parse_mode='MARKDOWN')
+        bot.send_message(message.chat.id, response, parse_mode="MARKDOWN")
     else:
         bot.send_message(message.chat.id, "Нет популярных слов-исключений.")
 
@@ -290,7 +290,8 @@ def help_bot(message):
         "`/exclude_key` - добавить слово-исключение\n"
         "`/popular_keywords` - популярные ключевые слова\n"
         "`/popular_excluded_words` - популярные слова-исключения\n"
-        "`/info` - информация", parse_mode='MARKDOWN'
+        "`/info` - информация",
+        parse_mode="MARKDOWN",
     )
 
 

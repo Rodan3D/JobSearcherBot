@@ -1,14 +1,15 @@
 import unittest
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import KeywordStat, ExcludedWordStat
+
+from models import ExcludedWordStat, KeywordStat
 
 engine = create_engine("sqlite:///:memory:")
 Session = sessionmaker(bind=engine)
 
 
 class TestKeywordStatsDatabase(unittest.TestCase):
-
     def setUp(self):
         KeywordStat.metadata.create_all(engine)
         ExcludedWordStat.metadata.create_all(engine)
@@ -24,7 +25,9 @@ class TestKeywordStatsDatabase(unittest.TestCase):
         self.session.add(keyword)
         self.session.commit()
 
-        keyword_from_db = self.session.query(KeywordStat).filter_by(name="test_keyword").first()
+        keyword_from_db = (
+            self.session.query(KeywordStat).filter_by(name="test_keyword").first()
+        )
         self.assertIsNotNone(keyword_from_db)
         self.assertEqual(keyword_from_db.name, "test_keyword")
         self.assertEqual(keyword_from_db.count, 3)
@@ -34,11 +37,15 @@ class TestKeywordStatsDatabase(unittest.TestCase):
         self.session.add(excluded_word)
         self.session.commit()
 
-        excluded_word_from_db = self.session.query(ExcludedWordStat).filter_by(name="test_excluded_word").first()
+        excluded_word_from_db = (
+            self.session.query(ExcludedWordStat)
+            .filter_by(name="test_excluded_word")
+            .first()
+        )
         self.assertIsNotNone(excluded_word_from_db)
         self.assertEqual(excluded_word_from_db.name, "test_excluded_word")
         self.assertEqual(excluded_word_from_db.count, 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

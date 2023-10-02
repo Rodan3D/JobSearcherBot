@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import patch
+
 from search_id_by_city_name import CityData
 
 
 class TestCityData(unittest.TestCase):
-
     def setUp(self):
         self.city_info = CityData("city_codes.txt")
 
@@ -27,5 +27,5 @@ class TestCityData(unittest.TestCase):
         self.assertIsNone(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
