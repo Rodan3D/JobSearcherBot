@@ -1,1 +1,1 @@
-TELEGRAM_TOKEN = "ТВОЙ ТОКЕН"
+TELEGRAM_TOKEN = 'Твой Токен'
