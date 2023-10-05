@@ -5,13 +5,14 @@
 """
 import telebot
 from telebot import types
-from config import TELEGRAM_TOKEN
-from api_hh import HH_API
-from logger import logger
+
 from add_key_and_exclude_words import (
     get_popular_excluded_words_from_database,
     get_popular_keywords_from_database,
 )
+from api_hh import HH_API
+from config import TELEGRAM_TOKEN
+from logger import logger
 
 # Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота в файле config.py
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -59,7 +60,7 @@ def start(message):
 @logger.catch
 @bot.message_handler(
     func=lambda message: message.text == 'Меню настройки вакансий ⚙️'
-                         or message.text == '/main'
+    or message.text == '/main'
 )
 def search(message):
     """
@@ -74,7 +75,7 @@ def search(message):
     item_search_vacancy = types.KeyboardButton('Поиск 🔎')
     item_exclude_word = types.KeyboardButton('Добавить слово-исключение')
     item_popular_keywords = types.KeyboardButton('Популярные ключевые слова')
-    item_popular_excluded_words = types.KeyboardButton('Популярные '
+    item_popular_excluded_words = types.KeyboardButton('Популярные ' 
                                                        'слова-исключения')
     item_back = types.KeyboardButton('Назад ↩️')
     markup.add(
@@ -123,7 +124,7 @@ def search_command(message):
 @logger.catch
 @bot.message_handler(
     func=lambda message: message.text == 'Ввести ключевое слово'
-                         or message.text == '/input_key'
+    or message.text == '/input_key'
 )
 def input_keyword(message):
     """
@@ -147,7 +148,7 @@ def set_new_keyword(message):
     """
     new_keyword = message.text
     hh_api.input_keyword(new_keyword)
-    bot.send_message(message.chat.id, f'Ключевое слово для '
+    bot.send_message(message.chat.id, f'Ключевое слово для ' 
                                       f'поиска: {new_keyword}')
     waiting_for_city[message.chat.id] = False
     set_city(message)
@@ -185,7 +186,7 @@ def set_new_city(message):
 @logger.catch
 @bot.message_handler(
     func=lambda message: message.text == 'Популярные ключевые слова'
-                         or message.text == '/popular_keywords'
+    or message.text == '/popular_keywords'
 )
 def popular_keywords(message):
     """
@@ -208,7 +209,7 @@ def popular_keywords(message):
 @logger.catch
 @bot.message_handler(
     func=lambda message: message.text == 'Популярные слова-исключения'
-                         or message.text == '/popular_excluded_words'
+    or message.text == '/popular_excluded_words'
 )
 def popular_excluded_words(message):
     """
@@ -231,7 +232,7 @@ def popular_excluded_words(message):
 @logger.catch
 @bot.message_handler(
     func=lambda message: message.text == 'Добавить слово-исключение'
-                         or message.text == '/exclude_key'
+    or message.text == '/exclude_key'
 )
 def add_exclude_words(message):
     """
@@ -336,7 +337,7 @@ def contacts_info(message):
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    bot.send_message(message.chat.id, 'Связь с разработчиком : '
+    bot.send_message(message.chat.id, 'Связь с разработчиком : ' 
                                       'https://t.me/Rodan3D')
 
 
@@ -377,5 +378,5 @@ if __name__ == '__main__':
     while True:
         try:
             bot.polling(none_stop=True)
-        except:
+        except Exception:
             pass
