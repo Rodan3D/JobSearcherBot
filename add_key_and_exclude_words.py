@@ -4,10 +4,9 @@
 а также получение популярных ключевых слов и слов-исключений из базы данных
 
 """
-from typing import List
-
 from logger import logger
 from models import ExcludedWordStat, KeywordStat, session
+from typing import List
 
 
 @logger.catch

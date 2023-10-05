@@ -1,14 +1,11 @@
 """
 Модуль, реализующий взаимодействие с API hh.ru.
 """
-
-from typing import Dict, Union
-
-import requests
-
-from add_key_and_exclude_words import add_excluded_word_stat, add_keyword_stat
 from logger import logger
+import requests
 from search_id_by_city_name import CityData
+from add_key_and_exclude_words import add_excluded_word_stat, add_keyword_stat
+from typing import Dict, Union
 
 city_info = CityData('city_codes.txt')
 
