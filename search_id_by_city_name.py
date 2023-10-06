@@ -45,8 +45,8 @@ class CityData:
                 lines = document_text.split('\n')
                 for line in lines:
                     if 'Город:' in line and 'Код города:' in line:
-                        city_name = line.split(
-                            'Город:')[1].split(';')[0].strip()
+                        city_name = line.split('Город:')[1].split(
+                            ';')[0].strip()
                         city_code = line.split('Код города:')[1].strip()
                         city_name = city_name.strip()
                         self.city_data[city_name] = city_code

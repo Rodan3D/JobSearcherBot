@@ -4,18 +4,19 @@
 команд
 """
 import telebot
-from telebot import types
 
-from add_key_and_exclude_words import (
-    get_popular_excluded_words_from_database,
-    get_popular_keywords_from_database,
-)
-from api_hh import HH_API
-from config import TELEGRAM_TOKEN
 from logger import logger
+from config import TELEGRAM_TOKEN
+from keyboard_handler import KeyboardHandler
+from add_key_and_exclude_words import DatabaseManager
+from api_hh import HH_API
 
 # Замените 'TELEGRAM_TOKEN' на ваш токен Telegram бота в файле config.py
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
+# Cоздаем экземпляр KeyboardHandler
+keyboard_handler = KeyboardHandler(bot)
+# Cоздаем экземпляр DatabaseManager
+database_manager = DatabaseManager
 # Создали экземпляр HH_API
 hh_api = HH_API()
 # Создаем состояние ожидания ключевого слова для поиска
@@ -32,12 +33,7 @@ def create_markup():
     Returns:
        types.ReplyKeyboardMarkup: Разметка клавиатуры.
     """
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
-    item_help = types.KeyboardButton('Помощь 🆘')
-    item_search = types.KeyboardButton('Меню настройки вакансий ⚙️')
-    item_info = types.KeyboardButton('Информация ℹ️')
-    markup.add(item_help, item_search, item_info)
-    return markup
+    keyboard_handler.create_markup()
 
 
 @logger.catch
@@ -49,12 +45,7 @@ def start(message):
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    markup = create_markup()
-    bot.send_message(
-        message.chat.id,
-        'Привет, {0.first_name}!'.format(message.from_user),
-        reply_markup=markup,
-    )
+    keyboard_handler.start(message)
 
 
 @logger.catch
@@ -70,26 +61,7 @@ def search(message):
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_input_keyword = types.KeyboardButton('Ввести ключевое слово')
-    item_search_vacancy = types.KeyboardButton('Поиск 🔎')
-    item_exclude_word = types.KeyboardButton('Добавить слово-исключение')
-    item_popular_keywords = types.KeyboardButton('Популярные ключевые слова')
-    item_popular_excluded_words = types.KeyboardButton('Популярные ' 
-                                                       'слова-исключения')
-    item_back = types.KeyboardButton('Назад ↩️')
-    markup.add(
-        item_input_keyword,
-        item_search_vacancy,
-        item_exclude_word,
-        item_popular_keywords,
-        item_popular_excluded_words,
-        item_back,
-    )
-    bot.send_message(
-        message.chat.id, 'Вы перешли в Меню настройки вакансий 🔎',
-        reply_markup=markup
-    )
+    keyboard_handler.search(message)
 
 
 @bot.message_handler(
@@ -196,7 +168,7 @@ def popular_keywords(message):
     Args:
        message (telebot.types.Message): Объект сообщения Telegram.
     """
-    keywords = get_popular_keywords_from_database()
+    keywords = database_manager.get_popular_keywords_from_database()
     if keywords:
         response = 'Популярные ключевые слова:\n\n'
         for keyword in keywords[:5]:
@@ -219,7 +191,8 @@ def popular_excluded_words(message):
     Args:
        message (telebot.types.Message): Объект сообщения Telegram.
     """
-    excluded_words = get_popular_excluded_words_from_database()
+    excluded_words = \
+        database_manager.get_popular_excluded_words_from_database()
     if excluded_words:
         response = 'Популярные слова-исключения:\n\n'
         for word in excluded_words[:5]:
@@ -293,22 +266,14 @@ def help_bot(message):
     func=lambda message: message.text == 'Информация ℹ️'
                          or message.text == '/info'
 )
-def about_info(message):
+def info(message):
     """
     Обработчик команды для вывода информации о боте.
 
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_about = types.KeyboardButton('О боте 💾')
-    item_contact = types.KeyboardButton('Контакты 📞')
-    item_back = types.KeyboardButton('Назад ↩️')
-    markup.add(item_about, item_contact, item_back)
-    bot.send_message(
-        message.chat.id, 'Вы перешли в меню Информация ℹ️',
-        reply_markup=markup
-    )
+    keyboard_handler.info(message)
 
 
 @logger.catch
@@ -322,14 +287,14 @@ def about_info(message):
     """
     bot.send_message(
         message.chat.id,
-        "Я бот-настройщик по _узкому_ поиску вакансий на сайте HeadHunter. "
-        "Под _узким_ понимается без всякого лишнего мусора",
-        parse_mode="MARKDOWN",
+        'Я бот-настройщик по _узкому_ поиску вакансий на сайте HeadHunter. '
+        'Под _узким_ понимается без всякого лишнего мусора',
+        parse_mode='MARKDOWN',
     )
 
 
 @logger.catch
-@bot.message_handler(func=lambda message: message.text == "Контакты 📞")
+@bot.message_handler(func=lambda message: message.text == 'Контакты 📞')
 def contacts_info(message):
     """
     Функция для вывода контактов с разработчиком.
@@ -337,7 +302,7 @@ def contacts_info(message):
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    bot.send_message(message.chat.id, 'Связь с разработчиком : ' 
+    bot.send_message(message.chat.id, 'Связь с разработчиком :'
                                       'https://t.me/Rodan3D')
 
 
@@ -350,10 +315,7 @@ def back(message):
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    markup = create_markup()
-    bot.send_message(
-        message.chat.id, 'Вы вернулись в главное меню', reply_markup=markup
-    )
+    keyboard_handler.back(message)
 
 
 @logger.catch
@@ -370,13 +332,3 @@ def handle_unknown(message):
         'Извините, я не понял ваш запрос 🤷‍♂️. Для получения списка команд '
         'воспользуйтесь командой /start или нажмите на кнопку Помощь 🆘',
     )
-
-
-# Запуск бота
-if __name__ == '__main__':
-    print('Я запущен!')
-    while True:
-        try:
-            bot.polling(none_stop=True)
-        except Exception:
-            pass

@@ -6,17 +6,19 @@ from typing import Dict, Union
 
 import requests
 
-from add_key_and_exclude_words import add_excluded_word_stat, add_keyword_stat
 from logger import logger
 from search_id_by_city_name import CityData
+from add_key_and_exclude_words import DatabaseManager
 
 city_info = CityData('city_codes.txt')
+database_manager = DatabaseManager
 
 
 class HH_API:
     """
     Класс для взаимодействия с API hh.ru и поиска вакансий.
     """
+
     @logger.catch
     def __init__(self) -> None:
         self.url = 'https://api.hh.ru/vacancies'
@@ -24,7 +26,7 @@ class HH_API:
             'text': '',
             'area': '',
             'only_with_salary': True,
-            'per_page': 30,
+            'per_page': 10,
             'page': 1,
         }
 
@@ -37,7 +39,7 @@ class HH_API:
             new_keyword: Строка с ключевым словом.
         """
         self.params['text'] = new_keyword
-        add_keyword_stat(new_keyword, 1)
+        database_manager.add_keyword_stat(new_keyword, 1)
 
     @logger.catch
     def input_area(self, city: str) -> None:
@@ -68,7 +70,7 @@ class HH_API:
             self.params['text'] = f"NOT {' NOT '.join(keywords_list)}"
 
         for keyword_to_exclude in keywords_list:
-            add_excluded_word_stat(keyword_to_exclude, 1)
+            database_manager.add_excluded_word_stat(keyword_to_exclude, 1)
 
     @logger.catch
     def search_vacancies(self) -> list:
@@ -89,7 +91,7 @@ class HH_API:
 
     @logger.catch
     def format_salary(self, salary_data: Dict[str, Union[
-        int, None, str]]) -> str:
+                                        int, None, str]]) -> str:
         """
         Форматирует информацию о зарплате из словаря в строку.
 
@@ -112,4 +114,3 @@ class HH_API:
 
 if __name__ == '__main__':
     hh_api = HH_API()
-    hh_api.search_vacancies()
