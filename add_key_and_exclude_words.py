@@ -10,9 +10,6 @@ from models import ExcludedWordStat, KeywordStat, session
 
 
 class DatabaseManager:
-    def __init__(self):
-        pass
-
     @staticmethod
     @logger.catch
     def add_keyword_stat(name: str, count: int) -> None:

@@ -23,6 +23,7 @@ hh_api = HH_API()
 waiting_for_keyword = {}
 # Создаем состояние ожидания города для поиска
 waiting_for_city = {}
+DEVELOPER_CONTACTS_URL = 'https://t.me/Rodan3D'
 
 
 @logger.catch
@@ -78,19 +79,20 @@ def search_command(message):
     """
     try:
         vacancies = hh_api.search_vacancies()
+        response = 'Результаты поиска вакансий:\n\n'
+        for vacancy in vacancies:
+            response += f'{vacancy["name"]}\n'
+            response += f'Зарплата: ' \
+                        f'{hh_api.format_salary(vacancy["salary"])}\n'
+            response += f'Город: {(vacancy["area"]["name"])}\n'
+            response += f'{vacancy["alternate_url"]}\n\n'
+
         if vacancies:
-            response = 'Результаты поиска вакансий:\n\n'
-            for vacancy in vacancies:
-                response += f'{vacancy["name"]}\n'
-                response += f'Зарплата: ' \
-                            f'{hh_api.format_salary(vacancy["salary"])}\n'
-                response += f'Город: {(vacancy["area"]["name"])}\n'
-                response += f'{vacancy["alternate_url"]}\n\n'
             bot.send_message(message.chat.id, response)
         else:
             bot.send_message(message.chat.id, 'Ничего не найдено.')
-    except Exception as e:
-        bot.send_message(message.chat.id, f'Произошла ошибка: {str(e)}')
+    except ValueError as e:
+        bot.send_message(message.chat.id, f'Ошибка в данных: {str(e)}')
 
 
 @logger.catch
@@ -169,10 +171,10 @@ def popular_keywords(message):
        message (telebot.types.Message): Объект сообщения Telegram.
     """
     keywords = database_manager.get_popular_keywords_from_database()
+    response = 'Популярные ключевые слова:\n\n'
+    for keyword in keywords[:5]:
+        response += f'*{keyword}*\n'
     if keywords:
-        response = 'Популярные ключевые слова:\n\n'
-        for keyword in keywords[:5]:
-            response += f'*{keyword}*\n'
         bot.send_message(message.chat.id, response, parse_mode='MARKDOWN')
     else:
         bot.send_message(message.chat.id, 'Нет популярных ключевых слов.')
@@ -193,10 +195,10 @@ def popular_excluded_words(message):
     """
     excluded_words = \
         database_manager.get_popular_excluded_words_from_database()
+    response = 'Популярные слова-исключения:\n\n'
+    for word in excluded_words[:5]:
+        response += f'*{word}*\n'
     if excluded_words:
-        response = 'Популярные слова-исключения:\n\n'
-        for word in excluded_words[:5]:
-            response += f'*{word}*\n'
         bot.send_message(message.chat.id, response, parse_mode='MARKDOWN')
     else:
         bot.send_message(message.chat.id, 'Нет популярных слов-исключений.')
@@ -302,8 +304,8 @@ def contacts_info(message):
     Args:
         message (telebot.types.Message): Объект сообщения Telegram.
     """
-    bot.send_message(message.chat.id, 'Связь с разработчиком :'
-                                      'https://t.me/Rodan3D')
+    bot.send_message(message.chat.id, f'Связь с разработчиком: '
+                                      f'{DEVELOPER_CONTACTS_URL}')
 
 
 @logger.catch
